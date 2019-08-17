@@ -21,7 +21,9 @@ const CardListItem = ({
         <CardImage imageUrl={imageUrl} />
       </Grid>
       <Grid item xs={8}>
-        <h1>{points} points</h1>
+        <h1>
+          {points} point{points > 1 ? 's' : ''}
+        </h1>
         <i>{reason}</i>
         <br />
         <br />

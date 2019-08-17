@@ -102,25 +102,25 @@ const CardEditor = ({ save, fields = null }) => {
         <CardImage imageUrl={editingFields.imageUrl} />
         <TextField
           label="Scryfall card ID"
-          value={editingFields.scryfallCardId}
+          value={editingFields.scryfallCardId || ''}
           fullWidth
           disabled
         />
         <TextField
           label="Image URL"
-          value={editingFields.imageUrl}
+          value={editingFields.imageUrl || ''}
           fullWidth
           helperText="Leave this as-is unless you want specific art"
         />
         <TextField
           label="Points"
-          value={editingFields.points}
+          value={editingFields.points || ''}
           onChange={event => setFieldValue('points', event.target.value)}
           helperText="1 being worst, 100 best card in the game"
         />
         <TextField
           label="Reasons for rank"
-          value={editingFields.reason}
+          value={editingFields.reason || ''}
           onChange={event => setFieldValue('reason', event.target.value)}
           fullWidth
           multiline
@@ -135,6 +135,8 @@ const CardEditor = ({ save, fields = null }) => {
         <br />
         Editing as user {user.name}
       </Paper>
+
+      <Button onClick={() => setEditingFields({})}>Reset form</Button>
     </>
   )
 }

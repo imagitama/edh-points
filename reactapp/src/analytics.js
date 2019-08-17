@@ -83,7 +83,7 @@ const actionDetails = {
 }
 
 export const trackAction = (name, payload) => {
-  if (inDevelopment()) {
+  if (inDevelopment() || !window.gtag) {
     return
   }
 

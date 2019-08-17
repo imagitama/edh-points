@@ -70,8 +70,6 @@ const EditCardForm = ({ cardId }) => {
     }
   }
 
-  console.log({ card })
-
   return (
     <>
       {isSaving && shouldShowMessage && <Snackbar message="Saving..." open />}

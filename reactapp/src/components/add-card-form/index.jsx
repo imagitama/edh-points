@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Snackbar from '@material-ui/core/Snackbar'
 import { allFieldsExceptAutogen as resourceFields } from '../../resources/cards'
 import {
@@ -8,17 +8,17 @@ import {
 } from '../../form-utils'
 import useDatabaseSave from '../../hooks/useDatabaseSave'
 import CardEditor from '../card-editor'
-import useDelay from '../../hooks/useDelay'
+import { Button } from '@material-ui/core'
 
 const AddCardForm = () => {
   const [isSaving, isSavingFail, isSavingSuccess, save] = useDatabaseSave(
     'cards'
   )
-  const shouldShowMessage = !useDelay(2000, [
-    isSaving,
-    isSavingFail,
-    isSavingSuccess
-  ])
+  const [shouldShowMessage, setShouldShowMessage] = useState(true)
+
+  useEffect(() => {
+    setShouldShowMessage(true)
+  }, [isSaving, isSavingFail, isSavingSuccess])
 
   const onSubmit = async (editingFields, userDocument) => {
     if (
@@ -46,14 +46,20 @@ const AddCardForm = () => {
     }
   }
 
+  const HideButton = (
+    <Button size="small" onClick={() => setShouldShowMessage(false)}>
+      Hide
+    </Button>
+  )
+
   return (
     <>
       {isSaving && shouldShowMessage && <Snackbar message="Saving..." open />}
       {isSavingFail && shouldShowMessage && (
-        <Snackbar message="Failed to add the card" open />
+        <Snackbar message="Failed to add the card" open action={HideButton} />
       )}
       {isSavingSuccess && shouldShowMessage && (
-        <Snackbar message="Added successfully" open />
+        <Snackbar message="Added successfully" open action={HideButton} />
       )}
       <CardEditor save={onSubmit} />
     </>
