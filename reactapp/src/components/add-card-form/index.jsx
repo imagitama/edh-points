@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Snackbar from '@material-ui/core/Snackbar'
 import { allFieldsExceptAutogen as resourceFields } from '../../resources/cards'
 import {
@@ -8,10 +8,17 @@ import {
 } from '../../form-utils'
 import useDatabaseSave from '../../hooks/useDatabaseSave'
 import CardEditor from '../card-editor'
+import useDelay from '../../hooks/useDelay'
 
 const AddCardForm = () => {
-  const [isSaving, isErrored, save] = useDatabaseSave('cards')
-  const [wasSavedSuccessfully, setWasSavedSuccessfully] = useState(null) // TODO: Move to hook?
+  const [isSaving, isSavingFail, isSavingSuccess, save] = useDatabaseSave(
+    'cards'
+  )
+  const shouldShowMessage = !useDelay(2000, [
+    isSaving,
+    isSavingFail,
+    isSavingSuccess
+  ])
 
   const onSubmit = async (editingFields, userDocument) => {
     if (
@@ -34,7 +41,6 @@ const AddCardForm = () => {
       )
 
       await save(firebaseFields)
-      setWasSavedSuccessfully(true)
     } catch (err) {
       console.error(`[AddCardForm] Save failed`, err)
     }
@@ -42,9 +48,13 @@ const AddCardForm = () => {
 
   return (
     <>
-      {isSaving && <Snackbar message="Saving..." open />}
-      {isErrored && <Snackbar message="Failed to edit the card" open />}
-      {wasSavedSuccessfully && <Snackbar message="Edited successfully" open />}
+      {isSaving && shouldShowMessage && <Snackbar message="Saving..." open />}
+      {isSavingFail && shouldShowMessage && (
+        <Snackbar message="Failed to add the card" open />
+      )}
+      {isSavingSuccess && shouldShowMessage && (
+        <Snackbar message="Added successfully" open />
+      )}
       <CardEditor save={onSubmit} />
     </>
   )

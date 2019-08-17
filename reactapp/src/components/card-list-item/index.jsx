@@ -17,13 +17,13 @@ const CardListItem = ({
 }) => (
   <div style={{ borderTop: '1px solid black', padding: '1rem 0' }}>
     <Grid container>
-      <Grid item>
+      <Grid item xs={4}>
         <CardImage imageUrl={imageUrl} />
       </Grid>
-      <Grid item>
+      <Grid item xs={8}>
         <h1>{points} points</h1>
-        <br />
         <i>{reason}</i>
+        <br />
         <br />
         <Link to={routes.viewCard.replace(':cardId', id)}>View</Link> |{' '}
         <Link to={routes.editCard.replace(':cardId', id)}>Edit</Link>
