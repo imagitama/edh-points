@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { TextField, Button, Paper } from '@material-ui/core'
 import useScryfall from '../../hooks/useScryfall'
@@ -28,6 +28,13 @@ const CardEditor = ({ save, fields = null }) => {
   const classes = useStyles()
   const [, , user] = useUser()
   const [userDocument] = useDatabaseDocument('users', user ? user.id : null)
+
+  useEffect(() => {
+    if (!fields) {
+      return
+    }
+    setEditingFields(fields)
+  }, [fields])
 
   if (!user || isFailedSearching) {
     return <ErrorMessage>Error?</ErrorMessage>
@@ -101,11 +108,13 @@ const CardEditor = ({ save, fields = null }) => {
         />
         <TextField
           label="Points"
+          value={editingFields.points}
           onChange={event => setFieldValue('points', event.target.value)}
           helperText="1 being worst, 100 best card in the game"
         />
         <TextField
           label="Reasons for rank"
+          value={editingFields.reason}
           onChange={event => setFieldValue('reason', event.target.value)}
           fullWidth
           multiline

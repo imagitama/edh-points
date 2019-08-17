@@ -1,5 +1,5 @@
-import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import React, { useState } from 'react'
+import Snackbar from '@material-ui/core/Snackbar'
 import { allFieldsExceptAutogen as resourceFields } from '../../resources/cards'
 import {
   convertResourceFieldsIntoFirebaseDoc,
@@ -7,24 +7,13 @@ import {
   mergeResourceFields
 } from '../../form-utils'
 import useDatabaseSave from '../../hooks/useDatabaseSave'
-import LoadingIndicator from '../loading'
-import ErrorMessage from '../error-message'
 import CardEditor from '../card-editor'
-
-const useStyles = makeStyles({
-  paper: {
-    padding: '1rem 2rem',
-    margin: '2rem 0'
-  },
-  button: {
-    marginTop: '0.5rem'
-  }
-})
 
 const AddCardForm = () => {
   const [isSaving, isErrored, save] = useDatabaseSave('cards')
+  const [wasSavedSuccessfully, setWasSavedSuccessfully] = useState(null) // TODO: Move to hook?
 
-  const onSubmit = (editingFields, userDocument) => {
+  const onSubmit = async (editingFields, userDocument) => {
     if (
       !editingFields.scryfallCardId ||
       !editingFields.imageUrl ||
@@ -44,13 +33,21 @@ const AddCardForm = () => {
         fieldsIncludingMeta
       )
 
-      save(firebaseFields)
+      await save(firebaseFields)
+      setWasSavedSuccessfully(true)
     } catch (err) {
       console.error(`[AddCardForm] Save failed`, err)
     }
   }
 
-  return <CardEditor save={onSubmit} />
+  return (
+    <>
+      {isSaving && <Snackbar message="Saving..." open />}
+      {isErrored && <Snackbar message="Failed to edit the card" open />}
+      {wasSavedSuccessfully && <Snackbar message="Edited successfully" open />}
+      <CardEditor save={onSubmit} />
+    </>
+  )
 }
 
 export default AddCardForm

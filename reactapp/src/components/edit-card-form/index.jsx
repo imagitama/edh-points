@@ -1,43 +1,42 @@
-import React, { useState } from 'react'
-import { connect } from 'react-redux'
-import { makeStyles } from '@material-ui/core/styles'
-import { TextField, Button, Paper } from '@material-ui/core'
-import { allFieldsExceptAutogen as resourceFields } from '../../resources/cards'
-import useScryfall from '../../hooks/useScryfall'
-import CardImage from '../card-image'
+import React, { useState, useEffect, useRef } from 'react'
+import Snackbar from '@material-ui/core/Snackbar'
+import {
+  allFieldsExceptAutogen as resourceFields,
+  editableFields
+} from '../../resources/cards'
 import {
   convertResourceFieldsIntoFirebaseDoc,
   appendNonEditableResourceFields,
-  mergeResourceFields
+  mergeResourceFields,
+  convertFirebaseDocIntoEditableFields
 } from '../../form-utils'
 import useDatabaseSave from '../../hooks/useDatabaseSave'
-import useDatabaseDocument from '../../hooks/useDatabaseDocument'
-import useUser from '../../hooks/useUser'
 import LoadingIndicator from '../loading'
 import ErrorMessage from '../error-message'
 import CardEditor from '../card-editor'
 import useDatabase from '../../hooks/useDatabase'
-
-const useStyles = makeStyles({
-  paper: {
-    padding: '1rem 2rem',
-    margin: '2rem 0'
-  },
-  button: {
-    marginTop: '0.5rem'
-  }
-})
+import useDelay from '../../hooks/useDelay'
 
 const EditCardForm = ({ cardId }) => {
-  const [isLoading, isErrored, card] = useDatabase('cards', cardId)
-  const classes = useStyles()
-  const [isSaving, isErroredSaving, save] = useDatabaseSave('cards')
+  const [isFetchingCard, isFetchingCardFail, card] = useDatabase(
+    'cards',
+    cardId
+  )
+  const [isSaving, isSavingFail, isSavingSuccess, save] = useDatabaseSave(
+    'cards',
+    cardId
+  )
+  const shouldShowMessage = !useDelay(2000, [
+    isSaving,
+    isSavingFail,
+    isSavingSuccess
+  ])
 
-  if (isLoading) {
+  if (isFetchingCard || !card) {
     return <LoadingIndicator />
   }
 
-  if (isErrored) {
+  if (isFetchingCardFail) {
     return (
       <ErrorMessage>
         Failed to find card for editing - are you sure it exists?
@@ -45,7 +44,7 @@ const EditCardForm = ({ cardId }) => {
     )
   }
 
-  const onSubmit = (editingFields, userDocument) => {
+  const onSubmit = async (editingFields, userDocument) => {
     if (
       !editingFields.scryfallCardId ||
       !editingFields.imageUrl ||
@@ -65,13 +64,29 @@ const EditCardForm = ({ cardId }) => {
         fieldsIncludingMeta
       )
 
-      save(firebaseFields)
+      await save(firebaseFields)
     } catch (err) {
       console.error(`[EditCardForm] Save failed`, err)
     }
   }
 
-  return <CardEditor save={onSubmit} fields={card} />
+  console.log({ card })
+
+  return (
+    <>
+      {isSaving && shouldShowMessage && <Snackbar message="Saving..." open />}
+      {isSavingFail && shouldShowMessage && (
+        <Snackbar message="Failed to edit the card" open />
+      )}
+      {isSavingSuccess && shouldShowMessage && (
+        <Snackbar message="Edited successfully" open />
+      )}
+      <CardEditor
+        save={onSubmit}
+        fields={convertFirebaseDocIntoEditableFields(card, editableFields)}
+      />
+    </>
+  )
 }
 
 export default EditCardForm

@@ -5,7 +5,6 @@ const useDatabaseDocument = (collectionName, documentId = null) => {
   const [document, setDocument] = useState(null)
 
   useEffect(() => {
-    console.log(`[useDatabaseDocument]`, { collectionName, documentId })
     if (!documentId) {
       return
     }

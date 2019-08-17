@@ -1,6 +1,5 @@
 import React from 'react'
 import { Grid, Button } from '@material-ui/core'
-import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import useDatabase from '../../hooks/useDatabase'
 import LoadingIndicator from '../loading'
 import ErrorMessage from '../error-message'
@@ -12,8 +11,6 @@ const SingleCardView = ({ cardId }) => {
   const [isRetrievingCard, isFailedRetrievingCard, scryfallCard] = useScryfall(
     card ? card.scryfallCardId : null
   )
-
-  console.log({ card, scryfallCard })
 
   if (isLoading || isRetrievingCard) {
     return <LoadingIndicator />

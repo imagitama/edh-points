@@ -1,7 +1,5 @@
 import { firestore } from 'firebase/app'
 
-const isDebug = true
-
 const secondsToDate = seconds => new Date(seconds * 1000)
 
 const mapDates = doc => {
@@ -58,8 +56,6 @@ export const getDocumentById = async (
   }
 
   const collection = firestore().collection(collectionName)
-
-  if (isDebug) console.log(`[useDatabase]`, { collectionName, documentId })
 
   const doc = await collection.doc(documentId).get()
   const data = await doc.data()

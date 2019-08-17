@@ -4,11 +4,13 @@ import 'firebase/firestore'
 
 export default (collectionName, documentId = null) => {
   const [isSaving, setIsSaving] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(null)
+  const [isErrored, setIsErrored] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
 
   const save = async fields => {
-    setIsSuccess(null)
     setIsSaving(true)
+    setIsErrored(false)
+    setIsSuccess(false)
 
     let document
 
@@ -21,16 +23,18 @@ export default (collectionName, documentId = null) => {
         document = await collection.add(fields)
       }
 
-      setIsSuccess(true)
       setIsSaving(false)
+      setIsErrored(false)
+      setIsSuccess(true)
 
       return [documentId ? documentId : document.id]
     } catch (err) {
       console.error(err)
-      setIsSuccess(false)
       setIsSaving(false)
+      setIsErrored(true)
+      setIsSuccess(false)
     }
   }
 
-  return [isSaving, isSuccess, save]
+  return [isSaving, isErrored, isSuccess, save]
 }

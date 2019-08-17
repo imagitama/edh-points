@@ -24,7 +24,7 @@ const CardImage = ({ scryfallCardId, imageUrl, size = 'md' }) => {
         imageUrl ||
         `https://img.scryfall.com/cards/normal/front/7/c/${scryfallCardId}.jpg`
       }
-      alt="Scryfall card image"
+      alt="Scryfall card"
       width={getWidthFromSize(size)}
     />
   )

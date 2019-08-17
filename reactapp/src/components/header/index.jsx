@@ -11,7 +11,6 @@ const useStyles = makeStyles({
     borderBottom: '1px solid #260b36',
     marginBottom: '4rem',
     background: 'rgb(100, 100, 150)',
-    // boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
     ['@media (min-width: 600px)']: {
       padding: '2rem 2rem'
     }

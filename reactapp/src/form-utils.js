@@ -28,6 +28,19 @@ export const convertResourceFieldsIntoFirebaseDoc = fields =>
       {}
     )
 
+export const convertFirebaseDocIntoEditableFields = (doc, editableFields) =>
+  Object.entries(doc)
+    .filter(([fieldName]) =>
+      Object.values(editableFields).find(({ name }) => name === fieldName)
+    )
+    .reduce(
+      (newObj, [fieldName, fieldValue]) => ({
+        ...newObj,
+        [fieldName]: fieldValue
+      }),
+      {}
+    )
+
 export const appendNonEditableResourceFields = (
   existingFields,
   userDocument,

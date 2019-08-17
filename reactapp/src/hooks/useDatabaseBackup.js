@@ -60,7 +60,5 @@ export default collectionName => {
     getData()
   }, [collectionName])
 
-  console.log('results', results)
-
   return [isLoading, isErrored, isSuccess, results]
 }

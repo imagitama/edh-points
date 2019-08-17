@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { inDevelopment } from '../environment'
 
 const scryFallApiUrl = 'https://api.scryfall.com'
 const cardByIdEndpoint = 'cards/'
@@ -33,21 +32,11 @@ const useScryfall = (scryfallCardId = null, cardNameSearchTerm = '') => {
     }
 
     if (cardNameSearchTerm in cardCacheBySearchTerm) {
-      if (inDevelopment())
-        console.log(
-          `useScryfall: Card name search term ${cardNameSearchTerm} in cache`,
-          cardCacheBySearchTerm[cardNameSearchTerm]
-        )
       setResponseJson(cardCacheBySearchTerm[cardNameSearchTerm])
       return
     }
 
     if (scryfallCardId in cardCacheById) {
-      if (inDevelopment())
-        console.log(
-          `useScryfall: Card ID ${scryfallCardId} in cache`,
-          cardCacheById[scryfallCardId]
-        )
       setResponseJson()
       return
     }

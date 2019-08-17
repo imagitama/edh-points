@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 import { searchDocuments, getDocumentById } from '../database'
 
-const isDebug = true
-
 export default (
   collectionName,
   documentId = null,
@@ -17,8 +15,6 @@ export default (
     setIsLoading(true)
 
     try {
-      if (isDebug) console.log(`[useDatabase]`, { collectionName, documentId })
-
       if (documentId) {
         const mappedDoc = await getDocumentById(
           collectionName,
