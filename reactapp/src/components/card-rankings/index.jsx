@@ -18,7 +18,13 @@ const CardRankings = () => {
     return <div>No cards found</div>
   }
 
-  return <CardList cards={results} />
+  return (
+    <CardList
+      cards={results.sort(
+        ({ points: pointsA }, { points: pointsB }) => pointsB - pointsA
+      )}
+    />
+  )
 }
 
 export default CardRankings
