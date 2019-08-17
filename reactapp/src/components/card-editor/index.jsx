@@ -72,7 +72,13 @@ const CardEditor = ({ save, fields = null }) => {
           {searchResults &&
             searchResults.map(result => (
               <>
-                <CardImage imageUrl={result.image_uris.normal} />
+                {result.image_uris ? (
+                  <CardImage imageUrl={result.image_uris.normal} />
+                ) : (
+                  result.card_faces.map(cardFace => (
+                    <CardImage imageUrl={cardFace.image_uris.normal} />
+                  ))
+                )}
                 <Button
                   variant="contained"
                   color="primary"
