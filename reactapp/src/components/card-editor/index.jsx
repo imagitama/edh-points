@@ -3,8 +3,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import { TextField, Button, Paper } from '@material-ui/core'
 import useScryfall from '../../hooks/useScryfall'
 import CardImage from '../card-image'
-import useDatabaseSave from '../../hooks/useDatabaseSave'
 import useDatabaseDocument from '../../hooks/useDatabaseDocument'
+import useScryfallSearch from '../../hooks/useScryfallSearch'
 import useUser from '../../hooks/useUser'
 import LoadingIndicator from '../loading'
 import ErrorMessage from '../error-message'
@@ -22,16 +22,18 @@ const useStyles = makeStyles({
 const CardEditor = ({ save, fields = null }) => {
   const [editingFields, setEditingFields] = useState(fields || {})
   const [searchTerm, setSearchTerm] = useState('')
-  const responseJson = useScryfall(null, searchTerm)[2]
+  const [isSearching, isFailedSearching, searchResults] = useScryfallSearch(
+    searchTerm
+  )
   const classes = useStyles()
   const [, , user] = useUser()
   const [userDocument] = useDatabaseDocument('users', user ? user.id : null)
 
-  if (!user) {
-    return <ErrorMessage>No user found - are you logged in?</ErrorMessage>
+  if (!user || isFailedSearching) {
+    return <ErrorMessage>Error?</ErrorMessage>
   }
 
-  if (!userDocument) {
+  if (!userDocument || isSearching) {
     return <LoadingIndicator />
   }
 
@@ -53,27 +55,31 @@ const CardEditor = ({ save, fields = null }) => {
         <Paper className={classes.paper}>
           <strong>Search</strong>
           <br />
-          {responseJson.id && (
-            <CardImage imageUrl={responseJson.image_uris.normal} />
-          )}
           <TextField
-            label="Card name"
+            label="Enter a card name"
             onChange={event => setSearchTerm(event.target.value)}
             fullWidth
             helperText="Automatically searches Scryfall"
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              setFieldValues({
-                scryfallCardId: responseJson.id,
-                imageUrl: responseJson.image_uris.normal
-              })
-            }}
-            className={classes.button}>
-            Select Card
-          </Button>
+          <br />
+          {searchResults &&
+            searchResults.map(result => (
+              <>
+                <CardImage imageUrl={result.image_uris.normal} />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setFieldValues({
+                      scryfallCardId: result.id,
+                      imageUrl: result.image_uris.normal
+                    })
+                  }}
+                  className={classes.button}>
+                  Select Card
+                </Button>
+              </>
+            ))}
         </Paper>
       )}
 
